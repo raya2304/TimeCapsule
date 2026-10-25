@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeCapsule — Digital History Museum</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        paper: "#F7F3EA",
+        ink: "#25271F",
+        olive: "#656C43",
+        gold: "#B58A48",
+        muted: "#77776D"
+      },
+      fontFamily: {
+        display: ["Playfair Display", "serif"],
+        sans: ["DM Sans", "sans-serif"]
+      }
+    }
+  }
+}
+</script>
+<style>
+*{scroll-behavior:smooth}
+body{background:#F7F3EA;color:#25271F}
+::selection{background:#B58A48;color:white}
+.art-card{transition:transform .3s,box-shadow .3s}
+.art-card:hover{transform:translateY(-5px);box-shadow:0 15px 35px #25271F12}
+.timeline-line{background:linear-gradient(to right,#B58A48,#656C43,#B58A48)}
+.reveal{animation:reveal .45s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+dialog::backdrop{background:#191A16B8;backdrop-filter:blur(4px)}
+</style>
+</head>
+<body class="font-sans">
+
+<header class="sticky top-0 z-40 bg-paper/95 backdrop-blur border-b border-[#DCD5C7]">
+  <nav class="max-w-7xl mx-auto px-5 md:px-10 py-4 flex items-center justify-between gap-4">
+    <a href="#" class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-ink text-gold flex items-center justify-center font-display text-xl rounded-sm">T.</div>
+      <div>
+        <div class="font-display font-bold tracking-[.15em] text-lg">TIME CAPSULE</div>
+        <div class="text-[9px] tracking-[.25em] uppercase text-muted">A museum beyond time</div>
+      </div>
+    </a>
+    <div class="hidden md:flex items-center gap-7 text-sm">
+      <a href="#timeline" class="hover:text-gold">Timeline</a>
+      <a href="#collections" class="hover:text-gold">Collections</a>
+      <a href="#today" class="hover:text-gold">On This Day</a>
+      <a href="#about" class="hover:text-gold">Our Museum</a>
+    </div>
+    <button onclick="showFavorites()" class="border border-ink px-4 py-2 text-xs font-semibold hover:bg-ink hover:text-paper transition">
+      ♡ SAVED <span id="savedCount">0</span>
+    </button>
+  </nav>
+</header>
+
+<main>
+<section class="max-w-7xl mx-auto px-5 md:px-10 pt-12 md:pt-20 pb-16">
+  <div class="grid lg:grid-cols-2 gap-12 items-center">
+    <div class="reveal">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="w-8 h-px bg-gold"></span>
+        <p class="text-xs uppercase tracking-[.25em] text-olive font-semibold">A journey through human history</p>
+      </div>
+      <h1 class="font-display text-5xl md:text-7xl leading-[1.08] tracking-tight">
+        Every era<br>has a <span class="italic text-olive">story.</span>
+      </h1>
+      <p class="mt-6 max-w-lg text-muted leading-7">
+        Walk through lost civilizations, extraordinary discoveries and moments that changed our world. The past is closer than you think.
+      </p>
+      <div class="flex flex-wrap gap-3 mt-8">
+        <a href="#timeline" class="bg-ink text-paper px-6 py-3 text-sm hover:bg-olive transition">Begin your journey ↗</a>
+        <a href="#collections" class="border border-[#CFC7B7] px-6 py-3 text-sm hover:border-ink transition">Explore collections</a>
+      </div>
+      <div class="grid grid-cols-3 gap-5 border-t border-[#DCD5C7] mt-12 pt-6 max-w-md">
+        <div><div class="font-display text-3xl">5</div><p class="text-xs text-muted mt-1">Historic eras</p></div>
+        <div><div class="font-display text-3xl">12+</div><p class="text-xs text-muted mt-1">Curated stories</p></div>
+        <div><div class="font-display text-3xl">∞</div><p class="text-xs text-muted mt-1">Things to discover</p></div>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="absolute -inset-3 border border-[#D7CDBB]"></div>
+      <div class="relative overflow-hidden bg-[#D9C9AA] min-h-[390px] md:min-h-[490px]">
+        <img class="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=85" alt="Ancient Roman architecture" onerror="this.style.display='none'">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#181A16DD] via-transparent to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-7 md:p-9 text-white">
+          <div class="text-xs tracking-[.2em] uppercase text-[#E5C38B]">Featured era · 27 BCE – 476 CE</div>
+          <h2 class="font-display text-3xl md:text-4xl mt-3">The Roman World</h2>
+          <p class="text-sm text-white/80 mt-2 max-w-sm">Engineering, empire and ideas that continue to shape our lives.</p>
+          <button onclick="openStory(4)" class="mt-5 text-sm border-b border-[#E5C38B] pb-1">Discover this era ↗</button>
+        </div>
+        <div class="absolute top-5 right-5 border border-white/60 text-white px-3 py-2 text-[10px] tracking-widest">EXHIBITION Nº 001</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline" class="bg-ink text-paper py-16 md:py-20">
+  <div class="max-w-7xl mx-auto px-5 md:px-10">
+    <div class="flex flex-wrap justify-between items-end gap-5 mb-12">
+      <div>
+        <p class="text-gold uppercase text-xs tracking-[.25em] mb-3">The grand chronology</p>
+        <h2 class="font-display text-4xl md:text-5xl">Travel through time.</h2>
+      </div>
+      <p class="text-white/55 text-sm max-w-sm leading-6">One timeline. Thousands of years. Select an era to uncover the moments that defined it.</p>
+    </div>
+    <div class="h-px timeline-line relative mb-8">
+      <span class="absolute left-0 -top-1.5 w-3 h-3 rounded-full bg-gold"></span>
+      <span class="absolute left-1/4 -top-1.5 w-3 h-3 rounded-full bg-gold"></span>
+      <span class="absolute left-2/4 -top-1.5 w-3 h-3 rounded-full bg-gold"></span>
+      <span class="absolute left-3/4 -top-1.5 w-3 h-3 rounded-full bg-gold"></span>
+      <span class="absolute right-0 -top-1.5 w-3 h-3 rounded-full bg-gold"></span>
+    </div>
+    <div id="eraButtons" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
+  </div>
+</section>
+
+<section id="collections" class="max-w-7xl mx-auto px-5 md:px-10 py-16 md:py-20">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+    <div>
+      <p class="text-olive text-xs tracking-[.25em] uppercase mb-3">The museum archive</p>
+      <h2 class="font-display text-4xl md:text-5xl">Stories worth preserving.</h2>
+      <p class="text-muted mt-3 text-sm">Explore the people, places and breakthroughs that made us.</p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3">
+      <input id="searchInput" type="search" placeholder="Search history..." class="border border-[#D5CCBC] bg-transparent px-4 py-3 text-sm outline-none focus:border-olive w-full sm:w-52">
+      <select id="filterEra" class="border border-[#D5CCBC] bg-paper px-4 py-3 text-sm outline-none focus:border-olive">
+        <option value="All">All eras</option>
+        <option value="Ancient">Ancient World</option>
+        <option value="Classical">Classical Age</option>
+        <option value="Medieval">Medieval World</option>
+        <option value="Renaissance">Renaissance</option>
+        <option value="Modern">Modern Age</option>
+      </select>
+    </div>
+  </div>
+  <div class="flex items-center justify-between border-y border-[#DCD5C7] py-3 mb-6">
+    <p id="resultCount" class="text-xs text-muted">Curated stories</p>
+    <button onclick="resetFilters()" class="text-xs underline underline-offset-4">Reset filters</button>
+  </div>
+  <div id="storyGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  <div id="emptyState" class="hidden text-center py-16">
+    <div class="font-display text-2xl">No stories found.</div>
+    <p class="text-muted text-sm mt-2">Try another keyword or era.</p>
+  </div>
+</section>
+
+<section id="today" class="border-y border-[#DCD5C7] bg-[#EEE8DA] py-16 md:py-20">
+  <div class="max-w-7xl mx-auto px-5 md:px-10 grid md:grid-cols-[.8fr_1.2fr] gap-10 items-center">
+    <div>
+      <p class="text-olive uppercase tracking-[.25em] text-xs mb-4">A page from the past</p>
+      <h2 class="font-display text-4xl md:text-5xl">On this day<span class="italic text-olive">.</span></h2>
+      <p class="text-muted leading-7 mt-4 max-w-md">Every date carries a memory. Discover a historical event associated with today's date.</p>
+      <div class="mt-7 flex items-center gap-4">
+        <div class="bg-ink text-paper p-4 min-w-20 text-center">
+          <div id="todayDay" class="font-display text-3xl">25</div>
+          <div id="todayMonth" class="uppercase text-[10px] tracking-widest mt-1">OCT</div>
+        </div>
+        <div>
+          <p class="font-semibold" id="todayDateLabel">Today's date</p>
+          <p class="text-xs text-muted mt-1">A small window into history</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-paper border border-[#DCD5C7] p-7 md:p-10">
+      <div class="flex items-center justify-between gap-3">
+        <span class="text-xs uppercase tracking-[.2em] text-gold">From the archives</span>
+        <span class="text-xs text-muted" id="todayYear">Historical record</span>
+      </div>
+      <h3 id="todayTitle" class="font-display text-3xl mt-5">Discover a moment in history</h3>
+      <p id="todayDescription" class="text-muted leading-7 mt-4">Explore the events that made this date memorable.</p>
+      <button onclick="showTodayEvent()" class="mt-6 bg-ink text-paper px-5 py-3 text-sm hover:bg-olive transition">Read the story ↗</button>
+      <p class="text-[10px] text-muted mt-5">Selected from the museum's sample archive; not a complete historical calendar.</p>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="max-w-7xl mx-auto px-5 md:px-10 py-16 md:py-20">
+  <div class="grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <p class="text-olive uppercase tracking-[.25em] text-xs mb-4">Our philosophy</p>
+      <h2 class="font-display text-4xl md:text-5xl leading-tight">The past is not gone.<br><span class="italic text-olive">It lives in us.</span></h2>
+    </div>
+    <div>
+      <p class="text-muted leading-7">TimeCapsule is a digital museum built around one idea: history should feel alive, accessible and endlessly fascinating. From the first written symbols to humanity's journey into space, every artifact offers a clue to who we are.</p>
+      <div class="border-t border-[#DCD5C7] mt-7 pt-5 grid grid-cols-2 gap-5">
+        <div><p class="font-display text-xl">Preserve</p><p class="text-xs text-muted mt-2">Keep the stories alive.</p></div>
+        <div><p class="font-display text-xl">Discover</p><p class="text-xs text-muted mt-2">Ask better questions.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="bg-ink text-paper py-8">
+  <div class="max-w-7xl mx-auto px-5 md:px-10 flex flex-col sm:flex-row justify-between gap-4">
+    <div><p class="font-display tracking-[.15em]">TIME CAPSULE.</p><p class="text-xs text-white/50 mt-2">History, preserved in moments.</p></div>
+    <p class="text-xs text-white/50 self-end">An independent digital museum concept · <span id="footerYear"></span></p>
+  </div>
+</footer>
+
+<dialog id="storyDialog" class="w-[92%] max-w-xl p-0 bg-paper text-ink shadow-2xl">
+  <div class="p-7 md:p-10">
+    <div class="flex justify-between items-center">
+      <span id="modalEra" class="text-xs uppercase tracking-[.2em] text-olive"></span>
+      <button onclick="closeDialog()" class="text-2xl leading-none" aria-label="Close dialog">×</button>
+    </div>
+    <p id="modalYear" class="text-gold text-sm mt-6"></p>
+    <h2 id="modalTitle" class="font-display text-3xl md:text-4xl mt-2"></h2>
+    <p id="modalDescription" class="text-muted leading-7 mt-5"></p>
+    <div class="border-t border-[#DCD5C7] mt-7 pt-5 flex flex-wrap gap-3">
+      <button id="modalSave" class="border border-ink px-4 py-3 text-sm hover:bg-ink hover:text-paper">♡ Save story</button>
+      <button onclick="closeDialog()" class="bg-ink text-paper px-4 py-3 text-sm">Return to museum</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const stories = [
+  {id:1,era:"Ancient",year:"c. 3100 BCE",title:"The Birth of Writing",tag:"Human invention",symbol:"𓂀",image:"https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=900&q=80",description:"In ancient Mesopotamia, early writing systems emerged to record goods, transactions and administration. These marks helped people preserve knowledge beyond memory.",detail:"Early cuneiform developed in southern Mesopotamia around the late fourth millennium BCE. Initially used for accounting, writing gradually expanded to literature, law and royal records. The invention of writing transformed how communities managed cities and transmitted ideas."},
+  {id:2,era:"Ancient",year:"c. 2560 BCE",title:"The Great Pyramid",tag:"Architectural wonder",symbol:"△",image:"https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=900&q=80",description:"The Great Pyramid of Giza became one of the most remarkable monuments of ancient Egypt, demonstrating extraordinary organization and engineering.",detail:"Built as a royal tomb for Pharaoh Khufu, the Great Pyramid was the tallest human-made structure for thousands of years. Its construction reflects the remarkable planning, skilled labor and administrative systems of ancient Egyptian society."},
+  {id:3,era:"Ancient",year:"c. 1754 BCE",title:"Laws of Hammurabi",tag:"Law & society",symbol:"▤",image:"https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?auto=format&fit=crop&w=900&q=80",description:"A famous Babylonian law collection was inscribed on a stone monument, preserving rules about commerce, property and social life.",detail:"The Code of Hammurabi is one of the best-known surviving ancient law collections. Its inscription offers historians a window into Babylonian justice, social hierarchy and daily life. Earlier legal traditions also existed, so it was not the world's first law code."},
+  {id:4,era:"Classical",year:"27 BCE – 476 CE",title:"The Roman World",tag:"Empire & ideas",symbol:"R",image:"https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=900&q=80",description:"Roman roads, architecture, legal traditions and public works connected a vast empire and influenced societies long after its western empire fell.",detail:"Roman civilization developed a remarkable network of roads, aqueducts, public buildings and cities. Roman law, Latin literature and engineering influenced many later societies. The western Roman imperial government ended in 476 CE, while the eastern Roman Empire continued for centuries."},
+  {id:5,era:"Classical",year:"5th century BCE",title:"The Age of Athenian Drama",tag:"Art & philosophy",symbol:"Ω",image:"https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=900&q=80",description:"Ancient Greek theatre explored human choices, power and fate, creating dramatic traditions that still inspire writers and audiences.",detail:"In Athens, tragedy and comedy became central parts of public festivals. Playwrights such as Sophocles, Euripides and Aristophanes used performance to explore social and political questions. Greek theatre remains an important foundation of dramatic literature."},
+  {id:6,era:"Medieval",year:"c. 105 CE onward",title:"The Silk Roads",tag:"Trade & exchange",symbol:"✦",image:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=900&q=80",description:"A network of overland and maritime routes connected communities across Asia, Africa and Europe through trade and cultural exchange.",detail:"The Silk Roads were not one road but interconnected routes that changed over time. Merchants, pilgrims and travelers moved textiles, spices, technologies, art and ideas. These networks helped shape the connected world long before modern transportation."},
+  {id:7,era:"Medieval",year:"c. 9th–13th centuries",title:"The House of Wisdom",tag:"Knowledge & learning",symbol:"✧",image:"https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80",description:"Baghdad became a major center of scholarship, where scholars translated, studied and extended works in mathematics, medicine and astronomy.",detail:"During the Abbasid period, Baghdad attracted scholars working across languages and disciplines. Translation and original research helped circulate Greek, Persian and Indian learning while supporting new developments in algebra, astronomy, medicine and philosophy."},
+  {id:8,era:"Medieval",year:"c. 1206–1368",title:"The Mongol Exchange",tag:"Connected worlds",symbol:"⌁",image:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80",description:"The Mongol Empire reshaped Eurasian connections, facilitating movement across large territories while also bringing conquest and destruction.",detail:"The Mongol Empire created the largest contiguous land empire in history. Under Mongol rule, some trade and diplomatic exchanges across Eurasia became easier, though warfare caused immense suffering. The empire fragmented into several successor khanates."},
+  {id:9,era:"Renaissance",year:"c. 1503–1506",title:"The Mona Lisa",tag:"Art & observation",symbol:"◉",image:"https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=900&q=80",description:"Leonardo da Vinci's celebrated portrait became an enduring symbol of Renaissance art, observation and experimentation.",detail:"Leonardo da Vinci worked on the Mona Lisa in the early sixteenth century. Its subtle modeling, composition and mysterious expression have fascinated viewers for generations. Leonardo's notebooks also reveal his wide-ranging interests in anatomy, mechanics and nature."},
+  {id:10,era:"Renaissance",year:"1543",title:"A New View of the Cosmos",tag:"Scientific revolution",symbol:"☼",image:"https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=900&q=80",description:"Nicolaus Copernicus published a major argument for a Sun-centered planetary system, challenging long-established astronomical assumptions.",detail:"Copernicus's De revolutionibus orbium coelestium appeared in 1543. It proposed that Earth rotates daily and travels around the Sun annually. The work became a key milestone in a much longer transformation of astronomy."},
+  {id:11,era:"Modern",year:"1769",title:"The Age of Steam",tag:"Industry & invention",symbol:"⚙",image:"https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=900&q=80",description:"Improvements to steam engines helped transform manufacturing, mining and transportation during the Industrial Revolution.",detail:"James Watt's engine improvements in the late eighteenth century made steam power more practical and efficient. Industrialization unfolded over generations, changing work, urban life, production and transport while creating new social and environmental challenges."},
+  {id:12,era:"Modern",year:"20 July 1969",title:"Footprints on the Moon",tag:"Space exploration",symbol:"☾",image:"https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=900&q=80",description:"Apollo 11 brought the first humans to the lunar surface, marking a defining moment in space exploration.",detail:"NASA's Apollo 11 mission landed on the Moon on 20 July 1969. Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit. The mission represented years of scientific research, engineering and teamwork."}
+];
+
+const eraInfo = [
+  {name:"Ancient",label:"Ancient World",date:"Before 500 CE",symbol:"𓂀"},
+  {name:"Classical",label:"Classical Age",date:"800 BCE – 500 CE",symbol:"⌂"},
+  {name:"Medieval",label:"Medieval World",date:"500 – 1500",symbol:"✦"},
+  {name:"Renaissance",label:"Renaissance",date:"1400 – 1700",symbol:"✧"},
+  {name:"Modern",label:"Modern Age",date:"1700 – today",symbol:"☾"}
+];
+
+const onThisDay = [
+  {month:1,day:24,year:"1848",title:"Gold discovered in California",description:"The discovery of gold at Sutter's Mill helped trigger the California Gold Rush, drawing people from across the world."},
+  {month:2,day:28,year:"1953",title:"A breakthrough in understanding DNA",description:"In 1953, research by James Watson, Francis Crick, Rosalind Franklin, Maurice Wilkins and others helped establish DNA's double-helical structure."},
+  {month:4,day:12,year:"1961",title:"The first human in space",description:"Cosmonaut Yuri Gagarin completed a pioneering spaceflight aboard Vostok 1, opening a new chapter in human space exploration."},
+  {month:7,day:20,year:"1969",title:"Humans walk on the Moon",description:"Apollo 11 astronauts Neil Armstrong and Buzz Aldrin explored the lunar surface while Michael Collins orbited above."},
+  {month:10,day:24,year:"1945",title:"The United Nations comes into existence",description:"The UN Charter entered into force in 1945, formally establishing the United Nations."},
+  {month:10,day:25,year:"1881",title:"The birth of Pablo Picasso",description:"Artist Pablo Picasso was born in Málaga, Spain. His work would help reshape modern art, including the development of Cubism."},
+  {month:11,day:9,year:"1989",title:"The Berlin Wall opens",description:"The opening of Berlin Wall crossings became a powerful symbol of political change in Europe and the approaching end of the Cold War."},
+  {month:12,day:10,year:"1948",title:"A declaration of human rights",description:"The United Nations General Assembly adopted the Universal Declaration of Human Rights, setting out a shared statement of fundamental rights."}
+];
+
+let activeStory = null;
+let favorites = JSON.parse(localStorage.getItem("timeCapsuleFavorites") || "[]");
+let currentStories = [...stories];
+
+function renderEras(){
+  document.getElementById("eraButtons").innerHTML = eraInfo.map(era => `
+    <button onclick="selectEra('${era.name}')" class="text-left border border-white/20 p-4 md:p-5 hover:bg-white/10 hover:border-gold transition group">
+      <div class="text-gold font-display text-2xl">${era.symbol}</div>
+      <div class="font-display text-lg mt-4">${era.label}</div>
+      <div class="text-white/45 text-xs mt-2">${era.date}</div>
+      <div class="text-gold text-xs mt-4 group-hover:translate-x-1 transition-transform">Explore ↗</div>
+    </button>`).join("");
+}
+
+function renderStories(){
+  const query = document.getElementById("searchInput").value.toLowerCase().trim();
+  const era = document.getElementById("filterEra").value;
+  currentStories = stories.filter(s => {
+    const matchesEra = era === "All" || s.era === era;
+    const matchesQuery = [s.title,s.description,s.year,s.tag,s.era].join(" ").toLowerCase().includes(query);
+    return matchesEra && matchesQuery;
+  });
+
+  document.getElementById("resultCount").textContent = `${currentStories.length} ${currentStories.length === 1 ? "story" : "stories"} in the archive`;
+  document.getElementById("emptyState").classList.toggle("hidden",currentStories.length > 0);
+
+  document.getElementById("storyGrid").innerHTML = currentStories.map((s,i) => `
+    <article class="art-card bg-white/50 border border-[#DED6C7] overflow-hidden reveal" style="animation-delay:${i*.04}s">
+      <div class="relative h-52 bg-[#D8CCB7] overflow-hidden">
+        <img src="${s.image}" alt="${s.title}" loading="lazy" class="w-full h-full object-cover" onerror="this.style.display='none'">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+        <span class="absolute top-4 left-4 bg-paper/95 text-ink text-[10px] uppercase tracking-[.15em] px-3 py-2">${s.tag}</span>
+        <button onclick="toggleFavorite(${s.id},event)" aria-label="Save ${s.title}" class="absolute top-3 right-3 w-10 h-10 bg-paper/95 rounded-full text-xl hover:bg-white">${favorites.includes(s.id)?"♥":"♡"}</button>
+      </div>
+      <div class="p-6">
+        <div class="flex justify-between items-center gap-3 text-[10px] uppercase tracking-[.15em] text-olive">
+          <span>${s.era} era</span><span>${s.year}</span>
+        </div>
+        <h3 class="font-display text-2xl mt-3">${s.title}</h3>
+        <p class="text-sm text-muted leading-6 mt-3">${s.description}</p>
+        <button onclick="openStory(${s.id})" class="mt-5 pt-4 border-t border-[#DED6C7] w-full flex justify-between text-sm font-semibold hover:text-olive">
+          Explore story <span>↗</span>
+        </button>
+      </div>
+    </article>`).join("");
+}
+
+function selectEra(era){
+  document.getElementById("filterEra").value = era;
+  renderStories();
+  document.getElementById("collections").scrollIntoView({behavior:"smooth"});
+}
+
+function resetFilters(){
+  document.getElementById("searchInput").value = "";
+  document.getElementById("filterEra").value = "All";
+  renderStories();
+}
+
+function openStory(id){
+  const s = stories.find(item => item.id === id);
+  if(!s) return;
+  activeStory = s;
+  document.getElementById("modalEra").textContent = s.era + " era · " + s.tag;
+  document.getElementById("modalYear").textContent = s.year;
+  document.getElementById("modalTitle").textContent = s.title;
+  document.getElementById("modalDescription").textContent = s.detail;
+  document.getElementById("modalSave").textContent = favorites.includes(s.id) ? "♥ Saved to collection" : "♡ Save story";
+  document.getElementById("modalSave").onclick = () => toggleFavorite(s.id);
+  document.getElementById("storyDialog").showModal();
+}
+
+function closeDialog(){
+  document.getElementById("storyDialog").close();
+}
+
+function toggleFavorite(id,event){
+  if(event) event.stopPropagation();
+  favorites = favorites.includes(id) ? favorites.filter(x => x !== id) : [...favorites,id];
+  localStorage.setItem("timeCapsuleFavorites",JSON.stringify(favorites));
+  updateSavedCount();
+  renderStories();
+  if(activeStory && activeStory.id === id && document.getElementById("storyDialog").open){
+    document.getElementById("modalSave").textContent = favorites.includes(id) ? "♥ Saved to collection" : "♡ Save story";
+  }
+}
+
+function updateSavedCount(){
+  document.getElementById("savedCount").textContent = favorites.length;
+}
+
+function showFavorites(){
+  const saved = stories.filter(s => favorites.includes(s.id));
+  if(!saved.length){
+    alert("Your collection is empty. Tap the heart on any story to save it here.");
+    return;
+  }
+  document.getElementById("searchInput").value = "";
+  document.getElementById("filterEra").value = "All";
+  document.getElementById("resultCount").textContent = `${saved.length} saved stories`;
+  document.getElementById("emptyState").classList.add("hidden");
+  document.getElementById("storyGrid").innerHTML = saved.map(s => `
+    <article class="art-card bg-white/50 border border-[#DED6C7] overflow-hidden">
+      <div class="h-40 bg-[#D8CCB7]"><img src="${s.image}" alt="${s.title}" class="w-full h-full object-cover" onerror="this.style.display='none'"></div>
+      <div class="p-5"><p class="text-xs text-olive">${s.year} · ${s.era}</p><h3 class="font-display text-2xl mt-2">${s.title}</h3><div class="flex gap-4 mt-5 text-sm"><button onclick="openStory(${s.id})">Read ↗</button><button onclick="toggleFavorite(${s.id})" class="text-red-800">Remove ♥</button></div></div>
+    </article>`).join("");
+  document.getElementById("collections").scrollIntoView({behavior:"smooth"});
+}
+
+function setupToday(){
+  const now = new Date();
+  const month = now.getMonth()+1;
+  const day = now.getDate();
+  document.getElementById("todayDay").textContent = String(day).padStart(2,"0");
+  document.getElementById("todayMonth").textContent = now.toLocaleString("en",{month:"short"}).toUpperCase();
+  document.getElementById("todayDateLabel").textContent = now.toLocaleDateString("en",{weekday:"long",month:"long",day:"numeric"});
+  document.getElementById("footerYear").textContent = now.getFullYear();
+
+  let event = onThisDay.find(e => e.month === month && e.day === day);
+  if(!event) event = onThisDay[(month * 3 + day) % onThisDay.length];
+
+  document.getElementById("todayYear").textContent = event.year;
+  document.getElementById("todayTitle").textContent = event.title;
+  document.getElementById("todayDescription").textContent = event.description;
+}
+
+function showTodayEvent(){
+  const title = document.getElementById("todayTitle").textContent;
+  const description = document.getElementById("todayDescription").textContent;
+  const year = document.getElementById("todayYear").textContent;
+  document.getElementById("modalEra").textContent = "On this day · Historical note";
+  document.getElementById("modalYear").textContent = year;
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalDescription").textContent = description + " This entry is a short introduction; consult reliable historical references for further context.";
+  document.getElementById("modalSave").textContent = "Close this story";
+  document.getElementById("modalSave").onclick = closeDialog;
+  document.getElementById("storyDialog").showModal();
+}
+
+document.getElementById("searchInput").addEventListener("input",renderStories);
+document.getElementById("filterEra").addEventListener("change",renderStories);
+document.getElementById("storyDialog").addEventListener("click",e => {
+  if(e.target === document.getElementById("storyDialog")) closeDialog();
+});
+
+renderEras();
+renderStories();
+setupToday();
+updateSavedCount();
+</script>
+</body>
+</html>
